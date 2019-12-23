@@ -9,6 +9,7 @@ import path from "path";
 import mongoose from "mongoose";
 import passport from "passport";
 import bluebird from "bluebird";
+import expressWs from "express-ws";
 import { MONGODB_URI, SESSION_SECRET } from "./util/secrets";
 
 const MongoStore = mongo(session);
@@ -18,13 +19,15 @@ import * as homeController from "./controllers/home";
 import * as userController from "./controllers/user";
 import * as apiController from "./controllers/api";
 import * as contactController from "./controllers/contact";
+import * as vehicleController from "./controllers/vehicle";
 
 
 // API keys and Passport configuration
 import * as passportConfig from "./config/passport";
 
 // Create Express server
-const app = express();
+const app = expressWs(express()).app;
+
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI;
@@ -101,6 +104,7 @@ app.post("/account/profile", passportConfig.isAuthenticated, userController.post
 app.post("/account/password", passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post("/account/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
+app.ws("/api/vehicles/:id/bid", passportConfig.isAuthenticatedWs, vehicleController.streamBids);
 
 /**
  * API examples routes.

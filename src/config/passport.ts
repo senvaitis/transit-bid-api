@@ -2,6 +2,7 @@ import passport from "passport";
 import passportLocal from "passport-local";
 import passportFacebook from "passport-facebook";
 import _ from "lodash";
+import * as ws from "ws";
 
 // import { User, UserType } from '../models/User';
 import { User, UserDocument } from "../models/User";
@@ -125,6 +126,16 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
         return next();
     }
     res.redirect("/login");
+};
+
+/**
+ * Login Required middleware.
+ */
+export const isAuthenticatedWs = (ws: ws, req: Request, next: NextFunction) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    ws.close();
 };
 
 /**
